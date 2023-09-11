@@ -1,16 +1,18 @@
 package com.blog.api.controllers;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.blog.api.payloads.ApiResponse;
@@ -45,6 +47,18 @@ public class PostController {
 				
 	}
 	
+	@GetMapping("/posts")
+	public ResponseEntity<List<PostDto>> getAllPost(@RequestParam(value="pageNumber", defaultValue="1",required=false) Integer pageNumber,@RequestParam(value="pageSize",defaultValue="5",required=false)Integer pageSize,@RequestParam(value="sortBy",defaultValue="postId",required=false)String sortBy){
+		List<PostDto> allPost=this.postService.getAllPost(pageNumber,pageSize,sortBy);
+		return new ResponseEntity<List<PostDto>>(allPost,HttpStatus.OK);
+	}
+	
+	
+	@GetMapping("/posts/search/{keywords}")
+	public ResponseEntity<List<PostDto>> searchPostsByTitle(@PathVariable("keywords")String keywords){
+		List<PostDto> result=this.postService.searchPosts(keywords);
+		return new ResponseEntity<List<PostDto>>(result,HttpStatus.OK);
+	}
 
 	
 

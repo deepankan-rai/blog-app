@@ -1,10 +1,15 @@
 package com.blog.api.services.impl;
 
 import java.util.Date;
-
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.blog.api.entity.Category;
@@ -70,6 +75,28 @@ public class PostServiceImpl implements PostService {
 		
 		this.postRepo.delete(post);
 
+	}
+	
+	@Override
+	public List<PostDto> getAllPost(Integer pageNumber,Integer pageSize,String sortBy){
+		
+		Pageable p= PageRequest.of(pageNumber, pageSize, Sort.by(sortBy).ascending());
+		
+		Page<Post>pagePost=this.postRepo.findAll(p);
+		
+		List<Post>allPosts=pagePost.getContent();
+		
+		List<PostDto>postDtos=allPosts.stream().map((post)->this.modelMapper.map(post,PostDto.class)).collect(Collectors.toList());	
+		return postDtos;		
+	}
+
+	@Override
+	public List<PostDto> searchPosts(String keyword) {
+		// TODO Auto-generated method stub
+		List<Post> posts =this.postRepo.findByTitleContaning(keyword);
+		
+		List<PostDto>postDtos=posts.stream().map((post)->this.modelMapper.map(posts, PostDto.class)).collect(Collectors.toList());
+		return postDtos;
 	}
 
 
